@@ -1,0 +1,44 @@
+From c865e1b61267a87a5a523d4b3ccc1e8c87ce7173 Mon Sep 17 00:00:00 2001
+From: Steven Brown <fatguylaughing@gmail.com>
+Date: Thu, 24 Mar 2011 17:47:52 -0500
+Subject: [PATCH] Making vocabulary plugin exportable
+
+---
+ plugins/context_admin/taxonomy_list_menu.inc |    9 +++++----
+ 1 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/plugins/context_admin/taxonomy_list_menu.inc b/plugins/context_admin/taxonomy_list_menu.inc
+index 231d86f..60a0a13 100644
+--- a/plugins/context_admin/taxonomy_list_menu.inc
++++ b/plugins/context_admin/taxonomy_list_menu.inc
+@@ -22,7 +22,7 @@ function context_admin_taxonomy_list_menu_content_form(&$form, &$form_state, $ca
+   }
+   $types = taxonomy_get_vocabularies();
+   foreach ($types as $type) {
+-    $options[$type->vid] = $type->name;
++    $options[$type->module] = $type->name;
+   }
+   $form['context_admin_vocabulary'] = array(
+     '#type' => 'radios',
+@@ -62,8 +62,9 @@ function context_admin_taxonomy_list_menu_content_form_submit(&$form, &$form_sta
+ 
+ function context_admin_taxonomy_list_menu_render_page($handler, $base_contexts, $args, $test = TRUE) {
+   module_load_include('inc', 'taxonomy', 'taxonomy.admin');
+-  if (is_numeric($handler->conf['context_admin_vocabulary'])) {
+-    $vocabulary = taxonomy_vocabulary_load($handler->conf['context_admin_vocabulary']);
++  $result = db_result(db_query("SELECT vid FROM {vocabulary} WHERE module = '%s'", $handler->conf['context_admin_vocabulary']));
++  if (is_numeric($result)) {
++    $vocabulary = taxonomy_vocabulary_load($result);
+   }
+   switch($handler->conf['context_admin_vocabulary_options']) {
+     case 'edit':
+@@ -90,4 +91,4 @@ function context_admin_taxonomy_list_menu_form_alter(&$form, $form_state, $form_
+   if ($form_id == 'context_admin_taxonomy_list_menu_taxonomy_form_vocabulary') {
+     unset($form['delete']);
+   }
+-}
+\ No newline at end of file
++}
+-- 
+1.7.4.1
+
