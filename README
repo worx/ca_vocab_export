@@ -1,0 +1,1 @@
+This patch should only be used if you are using the machine name for each vocabulary that gets created. In order to create the machine name you need to have features module installed and enabled.
